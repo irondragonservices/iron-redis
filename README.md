@@ -70,6 +70,10 @@ when the package set has actually changed, and it signs what it pushes.
 
 ## Changes from upstream
 
+- **Packages are patched before the libraries are lifted out.** Whatever ships
+  in the upstream image is what got copied, and upstream rebuilds on its own
+  schedule rather than the security team's, so the hardened image inherited
+  every unpatched library the upstream tag happened to carry.
 - **Redis is no longer compiled from source.** Upstream read the version out of
   the official image, then fetched the tarball from `download.redis.io` **over
   plain HTTP** and checked it against a hash file in
