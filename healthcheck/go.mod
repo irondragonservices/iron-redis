@@ -1,6 +1,6 @@
 module github.com/irondragonservices/iron-redis/healthcheck
 
-go 1.25.14
+go 1.26.7
 
 require github.com/redis/go-redis/v9 v9.22.0
 
