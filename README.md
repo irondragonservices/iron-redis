@@ -50,9 +50,23 @@ outside a trusted network without setting `requirepass` or an ACL.
 
 ```sh
 cosign verify ghcr.io/irondragonservices/iron-redis:8 \
-  --certificate-identity-regexp '^https://github.com/irondragonservices/' \
-  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+  --certificate-identity-regexp '^https://github\.com/irondragonservices/\.github/\.github/workflows/image-(release|refresh)\.yml@refs/heads/main$' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+  --certificate-github-workflow-repository irondragonservices/iron-redis
 ```
+
+Be precise about the identity. The signature is produced by the shared
+reusable workflow in
+[irondragonservices/.github](https://github.com/irondragonservices/.github),
+not by a workflow in this repository, so the certificate names *that* path.
+A looser pattern such as `^https://github.com/irondragonservices/` would
+accept a signature from any workflow in any repository in the organisation,
+which is a much weaker claim than it looks. The
+`--certificate-github-workflow-repository` flag is what ties the signature back
+to this repository.
+
+Both `image-release` and `image-refresh` sign: the nightly rebuild republishes
+when the package set has actually changed, and it signs what it pushes.
 
 ## Changes from upstream
 
