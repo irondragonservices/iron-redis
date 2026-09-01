@@ -1,5 +1,5 @@
 # image used for the healthcheck binary
-FROM golang:1.25-alpine AS gobuilder
+FROM golang:1.25-alpine@sha256:1ae0735f00daffa3aaf1363a5184c0d2dc55c78e3db4ec70241cdac97bf84b59 AS gobuilder
 WORKDIR /src
 COPY healthcheck/ ./
 # Static, so it runs in an image with no loader guarantee of its own.
@@ -18,7 +18,7 @@ RUN CGO_ENABLED=0 go build -trimpath -ldflags '-w -s' -o /healthcheck .
 # tarball over an unauthenticated channel, to arrive at a binary the official
 # image already contains. Copying it out is both simpler and a smaller thing
 # to trust.
-FROM redis:8.10.1 AS base
+FROM redis:8.10.1@sha256:298e5b3bc566bade82f46ad5511777a4a07a294097ce16ada2f6a42be5239df5 AS base
 
 # Fail the whole pipeline on the first failure. Without this the `ldd | awk |
 # while read` below reports success even when ldd finds nothing, and the image
@@ -70,7 +70,7 @@ RUN cp -a --parents /usr/local/bin/redis-server /out \
 # Distroless, matched to the Debian release the Redis image is built on. The
 # binaries are copied out dynamically linked, so a mismatched glibc is a
 # container that exits before it logs anything.
-FROM gcr.io/distroless/base-debian13:nonroot
+FROM gcr.io/distroless/base-debian13:nonroot@sha256:d199d20fb09c898d8822ae5cbd5cf3c6d424e9b5e1fc2eb9a719a7752cd9d861
 
 LABEL org.opencontainers.image.source="https://github.com/irondragonservices/iron-redis"
 LABEL org.opencontainers.image.description="Hardened base image for running Redis"
