@@ -50,12 +50,30 @@ outside a trusted network without setting `requirepass` or an ACL.
 
 ```sh
 cosign verify ghcr.io/irondragonservices/iron-redis:8 \
-  --certificate-identity-regexp '^https://github.com/irondragonservices/' \
-  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+  --certificate-identity-regexp '^https://github\.com/irondragonservices/\.github/\.github/workflows/image-(release|refresh)\.yml@refs/heads/main$' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+  --certificate-github-workflow-repository irondragonservices/iron-redis
 ```
+
+Be precise about the identity. The signature is produced by the shared
+reusable workflow in
+[irondragonservices/.github](https://github.com/irondragonservices/.github),
+not by a workflow in this repository, so the certificate names *that* path.
+A looser pattern such as `^https://github.com/irondragonservices/` would
+accept a signature from any workflow in any repository in the organisation,
+which is a much weaker claim than it looks. The
+`--certificate-github-workflow-repository` flag is what ties the signature back
+to this repository.
+
+Both `image-release` and `image-refresh` sign: the nightly rebuild republishes
+when the package set has actually changed, and it signs what it pushes.
 
 ## Changes from upstream
 
+- **Packages are patched before the libraries are lifted out.** Whatever ships
+  in the upstream image is what got copied, and upstream rebuilds on its own
+  schedule rather than the security team's, so the hardened image inherited
+  every unpatched library the upstream tag happened to carry.
 - **Redis is no longer compiled from source.** Upstream read the version out of
   the official image, then fetched the tarball from `download.redis.io` **over
   plain HTTP** and checked it against a hash file in

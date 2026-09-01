@@ -20,6 +20,21 @@ RUN CGO_ENABLED=0 go build -trimpath -ldflags '-w -s' -o /healthcheck .
 # to trust.
 FROM redis:8.10.1 AS base
 
+# Fail the whole pipeline on the first failure. Without this the `ldd | awk |
+# while read` below reports success even when ldd finds nothing, and the image
+# is built missing every library it was supposed to carry.
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Patch the packages before lifting the libraries out. Whatever ships in the
+# upstream image is what gets copied, and upstream rebuilds its image on its own
+# schedule rather than on the security team's — so without this the hardened
+# image inherits every unpatched library the upstream tag happens to carry.
+# hadolint ignore=DL3008
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 # An empty directory to become /data. Its ownership is set on the COPY, not
 # here: COPY of a directory copies the contents, creating the destination
 # fresh as root:root 0755, so anything done to it in this stage is discarded.
