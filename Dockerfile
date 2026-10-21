@@ -70,7 +70,7 @@ RUN cp -a --parents /usr/local/bin/redis-server /out \
 # Distroless, matched to the Debian release the Redis image is built on. The
 # binaries are copied out dynamically linked, so a mismatched glibc is a
 # container that exits before it logs anything.
-FROM gcr.io/distroless/base-debian13:nonroot@sha256:7e22204ffcba783587afba539fcc199cc8c91a7583b66299ac4dccdb5fed5f03
+FROM gcr.io/distroless/base-debian13:nonroot@sha256:6c591b4ac789b683ab3665327181e7cfb7a39b5834f42dcb73d7becb8d18a5d9
 
 LABEL org.opencontainers.image.source="https://github.com/irondragonservices/iron-redis"
 LABEL org.opencontainers.image.description="Hardened base image for running Redis"
