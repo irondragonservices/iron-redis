@@ -18,7 +18,7 @@ RUN CGO_ENABLED=0 go build -trimpath -ldflags '-w -s' -o /healthcheck .
 # tarball over an unauthenticated channel, to arrive at a binary the official
 # image already contains. Copying it out is both simpler and a smaller thing
 # to trust.
-FROM redis:8.10.2@sha256:2c2dff791878316e3b083188be0d578423b24813cdda5de0e80ea4f7b3e6bfd6 AS base
+FROM redis:8.10.2@sha256:e5235e6c61f17150352c9185380591aa887001a4a748a081dcf656ed2b170538 AS base
 
 # Fail the whole pipeline on the first failure. Without this the `ldd | awk |
 # while read` below reports success even when ldd finds nothing, and the image
